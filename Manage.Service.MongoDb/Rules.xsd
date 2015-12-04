@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Rules"
+    targetNamespace="Manage.Service.MongoDb"
+    elementFormDefault="qualified"
+    xmlns="Manage.Service.MongoDb"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:complexType abstract="true" name="command">
+    <xs:attribute name="name" type="xs:token" />
+  </xs:complexType>
+
+  <xs:complexType name="singleCommand">
+    <xs:complexContent>
+      <xs:extension base="command">
+        <xs:sequence maxOccurs="1" minOccurs="1">
+          <xs:element name="template" nillable="false" type="xs:token" />
+          <xs:element name="requires"  nillable="true" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="key" type="xs:token" nillable="false">
+                  <xs:annotation></xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="composedCommand">
+    <xs:complexContent>
+      <xs:extension base="command">
+        <xs:sequence maxOccurs="1" minOccurs="1">
+          <xs:element name="commands">
+            <xs:complexType>
+              <xs:sequence minOccurs="2" maxOccurs="unbounded">
+                <xs:element name="command">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="name" nillable="false" type="xs:token" />
+                      <xs:element name="linkNextScript" type="script" nillable="false" minOccurs="0"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="customCommand">
+    <xs:complexContent>
+      <xs:extension base="singleCommand">
+        <xs:attribute name="customCommandName" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="assemblyInfo" abstract="true">
+  </xs:complexType>
+
+  <xs:complexType name="longNameLocatedAssemblyInfo">
+    <xs:complexContent>
+      <xs:extension base="assemblyInfo">
+        <xs:sequence>
+          <xs:element name="assemblyName" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="fileLocatedAssemblyInfo">
+    <xs:complexContent>
+      <xs:extension base="assemblyInfo">
+        <xs:sequence>
+          <xs:element name="assemblyPath" type="xs:token" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="script">
+    <xs:sequence maxOccurs="1" minOccurs="1">
+      <xs:element name="body" type="xs:string" nillable="false" />
+      <xs:element name="imports" nillable="true" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence maxOccurs="1" minOccurs="1">
+            <xs:element name="nameSpaces" nillable="true" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                  <xs:element name="add" type="xs:token" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="assemblies" nillable="true" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence maxOccurs="unbounded">
+                  <xs:element type="assemblyInfo" name="add"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="output">
+    <xs:sequence minOccurs="1" maxOccurs="1">
+      <xs:element name="supportCommands">
+        <xs:complexType>
+          <xs:sequence maxOccurs="unbounded">
+            <xs:element name="commandName" type="xs:token" nillable="false" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="transformScript" type="script" nillable="false" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="rules">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="commands">
+          <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="unbounded">
+              <xs:element type="command" name="case" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="outputs" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="unbounded">
+              <xs:element type="output" nillable="false" name="case" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

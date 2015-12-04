@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rules xmlns="Manage.Service.MongoDb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <commands>
+    <case xsi:type="singleCommand" name="dbStats">
+      <template>{"dbStats": 1}</template>
+      <requires>
+        <key>dbName</key>
+      </requires>
+    </case>
+    <case xsi:type="singleCommand" name="listCollection">
+      <template>{"listCollections": 1}</template>
+      <requires>
+        <key>dbName</key>
+      </requires>
+    </case>
+    <case xsi:type="singleCommand" name="newCollection">
+      <template>{ create: "#collectionName#" }</template>
+      <requires>
+        <key>dbName</key>
+        <key>collectionName</key>
+      </requires>
+    </case>
+    <case xsi:type="singleCommand" name="currentOperations">
+      <template>{eval:"db.currentOp(true)",nolock:true}</template>
+    </case>
+    <case xsi:type="singleCommand" name="listDb">
+      <template>{ listDatabases: 1 }</template>    
+    </case>
+    <case xsi:type="customCommand" name="query" customCommandName="Query">
+      <template>{eval:"###.toArray()",nolock:true}</template>
+      <requires>
+        <key>connectionString</key>
+        <key>dbName</key>
+        <key>query</key>
+      </requires>
+    </case>
+  </commands>
+  <outputs>
+    <case>
+      <supportCommands>
+        <commandName>dbStats</commandName>
+      </supportCommands>
+      <transformScript>
+        <body>
+          <![CDATA[
+           var dic=new Dictionary<string,object>();
+           dic.Add("ObjectSize",Current.ExecuteResult["avgObjSize"]);
+            return dic;
+          ]]>
+        </body>
+        <imports>
+          <nameSpaces>
+            <add>System.Collections.Generic</add>
+          </nameSpaces>
+        </imports>
+      </transformScript>
+    </case>
+  </outputs>
+</rules>

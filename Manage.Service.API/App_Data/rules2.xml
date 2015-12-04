@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rules xmlns="Manage.Service.MongoDb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <commands>
+    <case xsi:type="singleCommand" name="dbStats">
+      <template>{"dbStats": 1}</template>
+      <requires>
+        <key>dbName</key>
+      </requires>
+    </case>
+
+    <case xsi:type="singleCommand" name="collStats">
+      <template>{ "collStats", "#collStats#" }</template>
+      <requires>
+        <key>dbName</key>
+        <key>collStats</key>
+      </requires>
+    </case>
+
+    <case name="serverStatus" xsi:type="singleCommand">
+      <template>{"serverStatus", 1}</template>
+      <requires>
+        <key>dbName</key>
+      </requires>
+    </case>
+
+    <case xsi:type="composedCommand" name="dummyTest">
+      <commands>
+        <command>
+          <name>first command's name</name>
+          <linkNextScript>
+            <body>
+              this is a demo, use roslyn to perform converts,
+              provide required data for the later commands
+            </body>
+            <imports>
+              <nameSpaces>
+                <add>xxx.ddd.xxx                  
+                </add>
+              </nameSpaces>
+            </imports>
+          </linkNextScript>
+        </command>
+        <command>
+          <name>yet another command's name</name>
+          <linkNextScript>
+            <body>
+              provide required data for the later commands
+              no namespaces require for the script
+            </body>
+          </linkNextScript>
+        </command>
+        <command>
+          <name>last command's name</name>
+        </command>
+      </commands>      
+    </case>
+    
+  </commands>
+  <outputs>
+    <case>
+      <supportCommands>
+        <commandName>dbStats</commandName>
+        <commandName>collStats</commandName>
+      </supportCommands>
+      <transformScript>
+        <body>
+          this is script body
+        </body>
+        <imports>
+          <assemblies>
+            <add xsi:type="fileLocatedAssemblyInfo">
+              <assemblyPath>
+                d:\1.dll
+              </assemblyPath>
+            </add>
+            <add xsi:type="longNameLocatedAssemblyInfo">
+              <assemblyName>abcddd, modulename</assemblyName>
+            </add>
+          </assemblies>          
+        </imports>
+      </transformScript>
+    </case>
+
+    <case>
+      <supportCommands>
+        <commandName>miiiii</commandName>
+      </supportCommands>
+      <transformScript>
+        <body>
+          script body
+        </body>
+      </transformScript>
+    </case>
+  </outputs>
+</rules>

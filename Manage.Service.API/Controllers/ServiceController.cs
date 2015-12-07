@@ -14,23 +14,16 @@ using System.Configuration;
 
 namespace Manage.Service.API.Controllers
 {
-
+    [ModelValidationFilter]
     public class ServiceController : ApiController
     {
         public async Task<ExecuteResult<KeyValuePair<string, object>>> PostAsync(ExecuteCommand command)
         {
             var inputKvp = command.GetCommandArgs();
 
-            Func<Task<IEnumerable<KeyValuePair<string, object>>>> func = async () =>
-                await RuleSettings.Rules.RunAsync(command.Name, new CommandContext(inputKvp), (input,dbName) =>
-                {
-                    var db = MongoDbHelper.GetDatabase(ConfigurationManager.AppSettings["ConnectionString"], dbName);
-                    return db.ExecuteCommandAsync(input);
-                });
-
             try
             {
-                return new ExecuteResult<KeyValuePair<string, object>> { Details = await func() };
+                return new ExecuteResult<KeyValuePair<string, object>> { Details = await RuleSettings.Rules.RunAsync(command.Name, new CommandContext(inputKvp)) };
             }
             catch (AggregateException ex)
             {
@@ -64,11 +57,11 @@ namespace Manage.Service.API.Controllers
             }
         }
 
-        public ExecuteResult<string> Get(string commandName)
+        public ExecuteResult<string> Get(string name)
         {
             return ReturnWarpper(() => new ExecuteResult<string>
             {
-                Details = RuleSettings.Rules.GetCommandRequiredKeys(commandName)
+                Details = RuleSettings.Rules.GetCommandRequiredKeys(name)
             });
         }
 

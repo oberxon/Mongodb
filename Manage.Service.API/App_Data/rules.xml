@@ -4,32 +4,41 @@
     <case xsi:type="singleCommand" name="dbStats">
       <template>{"dbStats": 1}</template>
       <requires>
+        <key>connStrName</key>
         <key>dbName</key>
       </requires>
     </case>
     <case xsi:type="singleCommand" name="listCollection">
       <template>{"listCollections": 1}</template>
       <requires>
+        <key>connStrName</key>
         <key>dbName</key>
       </requires>
     </case>
     <case xsi:type="singleCommand" name="newCollection">
       <template>{ create: "#collectionName#" }</template>
       <requires>
+        <key>connStrName</key>
         <key>dbName</key>
         <key>collectionName</key>
       </requires>
     </case>
     <case xsi:type="singleCommand" name="currentOperations">
       <template>{eval:"db.currentOp(true)",nolock:true}</template>
+      <requires>
+        <key>connStrName</key>
+      </requires>
     </case>
     <case xsi:type="singleCommand" name="listDb">
-      <template>{ listDatabases: 1 }</template>    
+      <template>{ listDatabases: 1 }</template>
+      <requires>
+        <key>connStrName</key>
+      </requires>
     </case>
     <case xsi:type="customCommand" name="query" customCommandName="Query">
       <template>{eval:"###.toArray()",nolock:true}</template>
       <requires>
-        <key>connectionString</key>
+        <key>connStrName</key>
         <key>dbName</key>
         <key>query</key>
       </requires>

@@ -11,7 +11,7 @@ namespace Manage.Service.MongoDb
 {
     public partial class rules
     {
-        public async Task<IEnumerable<KeyValuePair<string, object>>> RunAsync(string cmdName, CommandContext context, Func<IDictionary<string, object>,string, Task<ExpandoObject>> executor)
+        public async Task<IEnumerable<KeyValuePair<string, object>>> RunAsync(string cmdName, CommandContext context)
         {
             //Contract.Requires(!string.IsNullOrWhiteSpace(cmdName));
 
@@ -19,7 +19,7 @@ namespace Manage.Service.MongoDb
             if (!this.commands.IsSupport(cmdName, out cmd))
                 throw new NotSupportedException(cmdName + " not found.");
 
-            var rawResult =await cmd.ExecuteAsync(context, executor);
+            var rawResult =await cmd.ExecuteAsync(context);
 
             output transformer;
             if (this.outputs == null || !this.outputs.CanTransform(cmd, out transformer))

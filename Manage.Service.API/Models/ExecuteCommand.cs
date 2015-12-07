@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using Manage.Service.MongoDb.SQLAnalyzer.Ext;
@@ -10,6 +11,7 @@ namespace Manage.Service.API.Models
 {
     public class ExecuteCommand
     {
+        [Required]
         public string Name { get; set; }
 
         public object CommandMessage { get; set; }

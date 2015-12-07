@@ -9,12 +9,14 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Manage.Service.MongoDb.Behaviors.CustomCommandCollection.Cache;
+using Manage.Service.MongoDb.Misc;
+using Manage.Service.MongoDb.Behaviors;
 
 namespace Manage.Service.MongoDb
 {
     public abstract partial class command
     {
-        public abstract Task<IDictionary<string, object>> ExecuteAsync(CommandContext context, Func<IDictionary<string, object>, string, Task<ExpandoObject>> executor);
+        public abstract Task<IDictionary<string, object>> ExecuteAsync(CommandContext context);
 
         protected static void SaveResult(CommandContext context, IDictionary<string, object> result)
         {
@@ -33,14 +35,14 @@ namespace Manage.Service.MongoDb
 
     public partial class composedCommand
     {
-        public override async Task<IDictionary<string, object>> ExecuteAsync(CommandContext context, Func<IDictionary<string, object>, string, Task<ExpandoObject>> executor)
+        public override async Task<IDictionary<string, object>> ExecuteAsync(CommandContext context)
         {
             IDictionary<string, object> result = null;
 
             this.commands.command.ToList().ForEach(async cmdName =>
           {
               var targetCommand = RuleSettings.Rules.commands.@case.FirstOrDefault(c => string.Equals(c.name, cmdName.name, StringComparison.OrdinalIgnoreCase));
-              result = await targetCommand.ExecuteAsync(context, executor);
+              result = await targetCommand.ExecuteAsync(context);
 
               SaveResult(context, result);
 
@@ -71,23 +73,22 @@ namespace Manage.Service.MongoDb
 
     public partial class singleCommand
     {
-        const string DB_NAME_KEY = "dbName";
-        public override async Task<IDictionary<string, object>> ExecuteAsync(CommandContext context, Func<IDictionary<string, object>, string, Task<ExpandoObject>> executor)
+        internal const string DB_NAME_KEY = "dbName";
+        internal const string CONN_NAME_KEY = "connStrName";
+
+        public override async Task<IDictionary<string, object>> ExecuteAsync(CommandContext context)
         {
             string runningTemplate = GetRawCommand(context);
             var commandArgs = JsonConvert.DeserializeObject<IDictionary<string, object>>(runningTemplate);
 
-            string dbName = null;
+            var connectionString = context.Current.Input.TryGet(CONN_NAME_KEY);
+            if (connectionString == null)
+                throw new ArgumentNullException("connStrName should not be empty");
 
-            if (context.Current.Input.ContainsKey(DB_NAME_KEY))
-            {
-                dbName = context.Current.Input[DB_NAME_KEY].ToString();
-            }
-            else
-            {
-                dbName = "admin";
-            }
-            var result = await executor(commandArgs, dbName);
+            var dbName = context.Current.Input.TryGet(DB_NAME_KEY, "admin");
+
+
+            var result =await CommandExt.ExecuteMongoCommandAsync(connectionString.ToString(), dbName.ToString(), commandArgs);
             SaveResult(context, result);
             return result;
         }
@@ -114,7 +115,7 @@ namespace Manage.Service.MongoDb
 
     public partial class customCommand
     {
-        public override Task<IDictionary<string, object>> ExecuteAsync(CommandContext context, Func<IDictionary<string, object>, string, Task<ExpandoObject>> executor)
+        public override Task<IDictionary<string, object>> ExecuteAsync(CommandContext context)
         {
             var realCommand = CustomCommandCache.Get(this.customCommandName);
             return realCommand.ExecuteAsync(context.Current.Input, this);

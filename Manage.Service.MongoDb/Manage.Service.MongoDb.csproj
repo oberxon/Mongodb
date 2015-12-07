@@ -145,6 +145,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\CommandExt.cs" />
     <Compile Include="Behaviors\CustomCommandCollection\Cache\CustomCommandCache.cs" />
     <Compile Include="Behaviors\CustomCommandCollection\ICustomExecuteableCommand.cs" />
     <Compile Include="Behaviors\CustomCommandCollection\Query.cs" />

@@ -23,11 +23,11 @@ namespace Manage.Service.MongoDb.Behaviors.CustomCommandCollection
 
         public async Task<IDictionary<string, object>> ExecuteAsync(IDictionary<string, object> input, singleCommand command)
         {
-            var connectionString = ToStr(input.TryGet("connectionString"));
+            var connectionString = ToStr(input.TryGet(singleCommand.CONN_NAME_KEY));
             if (connectionString == null)
-                throw new ArgumentNullException("ConnectionString is empty.");
+                throw new ArgumentNullException("connStrName should not be empty.");
 
-            var dbName = ToStr(input.TryGet("dbName"));
+            var dbName = ToStr(input.TryGet(singleCommand.DB_NAME_KEY));
             if (dbName == null)
                 throw new ArgumentNullException("dbName is empty");
 

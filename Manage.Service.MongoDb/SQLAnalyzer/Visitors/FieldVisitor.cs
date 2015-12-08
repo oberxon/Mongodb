@@ -21,7 +21,8 @@ namespace Manage.Service.MongoDb.SQLAnalyzer.Visitors
             var q = (from n in nodes
                     select string.Format("{0}:1", n)).ToList();
             //remove _id from showing
-            q.Add("_id:0");
+            if(!q.Contains("_id"))
+                q.Add("_id:0");
             return new StringBuilder().Join(",", q);
         }
 

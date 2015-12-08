@@ -66,5 +66,12 @@ FETCH next 10 ROWS ONLY";
             var sql = "select * from tb order by id offset 1 rows fetch next 1 rows only";
             Translate(sql);
         }
+
+        [TestMethod]
+        public void sql_in_test()
+        {
+            var sql = "select * from tb where (id=1 and type=2)or(id=2 and type=3)";
+            Translate(sql);
+        }
     }
 }

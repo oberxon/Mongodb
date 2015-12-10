@@ -161,7 +161,6 @@
     <Compile Include="Behaviors\p_script.cs" />
     <Compile Include="Behaviors\p_scriptImportsAssemblies.cs" />
     <Compile Include="Behaviors\p_scriptImportsNameSpaces.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="ExpandoObjectHelper.cs" />
     <Compile Include="Misc\DictionaryHelper.cs" />
     <Compile Include="MongoDbHelper.cs" />
